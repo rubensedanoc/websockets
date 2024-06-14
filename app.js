@@ -16,6 +16,7 @@ const express = require('express');
 var bodyParser = require('body-parser');
 const {redisClient, getRoomFromCache, addMessageToCache} = require('./redis');
 const {addUser, getUser, deleteUser} = require('./users');
+const {addConnectedUser, removeConnectedUser, getConnectedUsers} = require('./connectedUsers');
 
 const app = express();
 app.use(express.static(__dirname + '/public'));
@@ -83,8 +84,8 @@ io.on('connection', socket => {
 
   //logger.info("Client Connected and added to the list of connected users");
    if (userId) {
-  /*addConnectedUser(+userId);
-  io.emit("usersPresenceList", getConnectedUsers());*/
+     addConnectedUser(+userId);
+     io.emit("usersPresenceList", getConnectedUsers());
    }
 
   socket.on("joinChatBox", (ticketId) => {
@@ -107,8 +108,8 @@ io.on('connection', socket => {
         "Client disconnected and removed from the list of connected users"
     );*/
     if (userId) {
-    /*removeConnectedUser(+userId);
-    io.emit("usersPresenceList", getConnectedUsers());*/
+      removeConnectedUser(+userId);
+      io.emit("usersPresenceList", getConnectedUsers());
     }
   });
 
