@@ -11,3 +11,8 @@ function removeConnectedUser(id){
 function getConnectedUsers(){
   return Array.from(connectedUsers);
 }
+module.exports = {
+  addConnectedUser,
+  removeConnectedUser,
+  getConnectedUsers,
+};
