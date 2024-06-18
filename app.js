@@ -43,14 +43,16 @@ app.post("/toEmit", async (req, res) => {
 
       console.log("--- room: ", room);
 
-      io.to(toElement).emit(event.name, event.data, (error, ack) => {
-        if (error) {
-          console.error(`Error emitting to room ${toElement}:`, error);
-          res.status(500).send({ msg: "Error emitting event" });
-          return;
-        }
-        console.log(`Message delivered to room: ${toElement}`);
-      });
+      // io.to(toElement).emit(event.name, event.data, (error) => {
+      //   if (error) {
+      //     console.error(`Error emitting to room ${toElement}:`, error);
+      //     res.status(500).send({ msg: "Error emitting event" });
+      //     return;
+      //   }
+      //   console.log(`Message delivered to room: ${toElement}`);
+      // });
+
+      io.to(toElement).emit(event.name, event.data);
     }
     res.send({ msg: "Enviado con éxito" });
   } catch (error) {
@@ -66,6 +68,7 @@ const io = require("socket.io")(server, {
   cors: {
     origin: "https://wa-app.restaurant.pe:444",
   },
+  connectionStateRecovery: {},
 });
 
 io.set;
