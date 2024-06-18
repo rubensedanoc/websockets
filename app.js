@@ -68,7 +68,12 @@ const io = require("socket.io")(server, {
   cors: {
     origin: "https://wa-app.restaurant.pe:444",
   },
-  connectionStateRecovery: {},
+  connectionStateRecovery: {
+    // the backup duration of the sessions and the packets
+    maxDisconnectionDuration: 2 * 60 * 1000,
+    // whether to skip middlewares upon successful recovery
+    skipMiddlewares: true,
+  },
 });
 
 io.set;
