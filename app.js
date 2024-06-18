@@ -40,7 +40,6 @@ app.post("/toEmit", async (req, res) => {
   try {
     for (const toElement of toElements) {
       const room = io.sockets.adapter.rooms[toElement];
-
       console.log("--- room: ", room);
 
       // io.to(toElement).emit(event.name, event.data, (error) => {
@@ -51,9 +50,8 @@ app.post("/toEmit", async (req, res) => {
       //   }
       //   console.log(`Message delivered to room: ${toElement}`);
       // });
-
-      io.to(toElement).emit(event.name, event.data);
     }
+    io.to(toElements).emit(event.name, event.data);
     res.send({ msg: "Enviado con éxito" });
   } catch (error) {
     console.error("Error during event emission:", error);
