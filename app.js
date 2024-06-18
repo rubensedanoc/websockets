@@ -32,31 +32,20 @@ app.get("/", async (req, res) => {
   res.render("index");
 });
 app.post("/toEmit", async (req, res) => {
-  console.log("--- receiving data: ", req.body);
+  console.log("receiving data ...");
+  console.log("body is ", req.body);
+  //console.log('body is ',req.body.to);
+  /*for(var i = 0; i < req.body.to.length; i++)
+  {
+    var tablename = req.body.to[i];
+    console.log(tablename)
+  }*/
+  //console.log(io);
 
-  const toElements = req.body.to;
-  const event = req.body.event;
-
-  try {
-    for (const toElement of toElements) {
-      const room = io.sockets.adapter.rooms[toElement];
-      console.log("--- room: ", room);
-
-      // io.to(toElement).emit(event.name, event.data, (error) => {
-      //   if (error) {
-      //     console.error(`Error emitting to room ${toElement}:`, error);
-      //     res.status(500).send({ msg: "Error emitting event" });
-      //     return;
-      //   }
-      //   console.log(`Message delivered to room: ${toElement}`);
-      // });
-    }
-    io.to(toElements).emit(event.name, event.data);
-    res.send({ msg: "Enviado con éxito" });
-  } catch (error) {
-    console.error("Error during event emission:", error);
-    res.status(500).send({ msg: "Error during event emission" });
+  for (const toElement of req.body.to) {
+    io.to(toElement).emit(req.body.event.name, req.body.event.data);
   }
+  res.send({ msg: "Enviado con exito" });
 });
 
 // [START cloudrun_websockets_server]
@@ -65,12 +54,6 @@ const server = require("http").Server(app);
 const io = require("socket.io")(server, {
   cors: {
     origin: "https://wa-app.restaurant.pe:444",
-  },
-  connectionStateRecovery: {
-    // the backup duration of the sessions and the packets
-    maxDisconnectionDuration: 2 * 60 * 1000,
-    // whether to skip middlewares upon successful recovery
-    skipMiddlewares: true,
   },
 });
 
