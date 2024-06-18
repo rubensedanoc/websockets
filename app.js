@@ -32,20 +32,31 @@ app.get("/", async (req, res) => {
   res.render("index");
 });
 app.post("/toEmit", async (req, res) => {
-  console.log("receiving data ...");
-  console.log("body is ", req.body);
-  //console.log('body is ',req.body.to);
-  /*for(var i = 0; i < req.body.to.length; i++)
-  {
-    var tablename = req.body.to[i];
-    console.log(tablename)
-  }*/
-  //console.log(io);
+  console.log("--- receiving data: ", req.body);
 
-  for (const toElement of req.body.to) {
-    io.to(toElement).emit(req.body.event.name, req.body.event.data);
+  const toElements = req.body.to;
+  const event = req.body.event;
+
+  try {
+    for (const toElement of toElements) {
+      const room = io.sockets.adapter.rooms[toElement];
+
+      console.log("--- room: ", room);
+
+      io.to(toElement).emit(event.name, event.data, (error, ack) => {
+        if (error) {
+          console.error(`Error emitting to room ${toElement}:`, error);
+          res.status(500).send({ msg: "Error emitting event" });
+          return;
+        }
+        console.log(`Message delivered to room: ${toElement}`);
+      });
+    }
+    res.send({ msg: "Enviado con éxito" });
+  } catch (error) {
+    console.error("Error during event emission:", error);
+    res.status(500).send({ msg: "Error during event emission" });
   }
-  res.send({ msg: "Enviado con exito" });
 });
 
 // [START cloudrun_websockets_server]
