@@ -14,8 +14,8 @@
 
 const express = require("express");
 var bodyParser = require("body-parser");
-const { redisClient, getRoomFromCache, addMessageToCache } = require("./redis");
-const { addUser, getUser, deleteUser } = require("./users");
+// const { redisClient, getRoomFromCache, addMessageToCache } = require("./redis");
+// const { addUser, getUser, deleteUser } = require("./users");
 const {
   addConnectedUser,
   removeConnectedUser,
@@ -48,22 +48,36 @@ app.post("/toEmit", async (req, res) => {
   res.send({ msg: "Enviado con exito" });
 });
 
+const REDISHOST = process.env.REDISHOST || "localhost";
+const REDISPORT = process.env.REDISPORT || 6379;
+
+// Instantiate the Redis client
+const redisClient = require("redis").createClient({
+  url: `redis://${REDISHOST}:${REDISPORT}`,
+});
+
+const subClient = redisClient.duplicate();
+
+// Connect to the Redis server
+(async () => {
+  await redisClient.connect();
+  await subClient.connect();
+})();
+
 // [START cloudrun_websockets_server]
 // Initialize Socket.io
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://wa-app.restaurant.pe:444",
+    origin: "*",
   },
 });
 
 io.set;
 
-// [START cloudrun_websockets_redis_adapter]
 const { createAdapter } = require("@socket.io/redis-adapter");
-// Replace in-memory adapter with Redis
-const subClient = redisClient.duplicate();
 io.adapter(createAdapter(redisClient, subClient));
+
 // [END cloudrun_websockets_redis_adapter]
 // Add error handlers
 redisClient.on("error", (err) => {
