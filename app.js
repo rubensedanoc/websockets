@@ -69,7 +69,7 @@ const subClient = redisClient.duplicate();
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: "*",
+    origin: ["https://wa-app.restaurant.pe:444", "https://comercial-app.restaurant.pe:445", "http://localhost:3333"],
   },
 });
 
