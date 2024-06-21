@@ -42,9 +42,14 @@ app.post("/toEmit", async (req, res) => {
   }*/
   //console.log(io);
 
-  for (const toElement of req.body.to) {
-    io.to(toElement).emit(req.body.event.name, req.body.event.data);
+  if (req.body.to) {
+    for (const toElement of req.body.to) {
+      io.to(toElement).emit(req.body.event.name, req.body.event.data);
+    }
+  } else {
+    io.emit(req.body.event.name, req.body.event.data);
   }
+
   res.send({ msg: "Enviado con exito" });
 });
 
@@ -53,7 +58,11 @@ app.post("/toEmit", async (req, res) => {
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: ["https://wa-app.restaurant.pe:444", "https://comercial-app.restaurant.pe:445", "http://localhost:3333"],
+    origin: [
+      "https://wa-app.restaurant.pe:444",
+      "https://comercial-app.restaurant.pe:445",
+      "http://localhost:3333",
+    ],
   },
 });
 
